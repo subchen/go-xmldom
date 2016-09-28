@@ -52,6 +52,35 @@ func ExampleNode_GetChildren() {
 	// testcase: name = ExampleParse
 }
 
+func ExampleNode_Query() {
+	node := xmldom.Must(xmldom.ParseXML(ExampleXml)).Root
+	// xpath expr: https://github.com/antchfx/xpath
+
+	// find all children
+	fmt.Printf("children = %v\n", len(node.Query("//*")))
+
+	// find node matched tag name
+	nodeList := node.Query("//testcase")
+	for _, c := range nodeList {
+		fmt.Printf("%v: name = %v\n", c.Name, c.GetAttributeValue("name"))
+	}
+	// Output:
+	// children = 5
+	// testcase: name = ExampleParseXML
+	// testcase: name = ExampleParse
+}
+
+func ExampleNode_QueryOne() {
+	node := xmldom.Must(xmldom.ParseXML(ExampleXml)).Root
+	// xpath expr: https://github.com/antchfx/xpath
+
+	// find node matched attr name
+	c := node.QueryOne("//testcase[@name='ExampleParseXML']")
+	fmt.Printf("%v: name = %v\n", c.Name, c.GetAttributeValue("name"))
+	// Output:
+	// testcase: name = ExampleParseXML
+}
+
 func ExampleDocument_XML() {
 	doc := xmldom.Must(xmldom.ParseXML(ExampleXml))
 	fmt.Println(doc.XML())
