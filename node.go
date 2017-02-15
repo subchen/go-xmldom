@@ -37,22 +37,24 @@ func (n *Node) GetAttributeValue(name string) string {
 	return ""
 }
 
-func (n *Node) SetAttributeValue(name string, value string) {
+func (n *Node) SetAttributeValue(name string, value string) *Node {
 	attr := n.GetAttribute(name)
 	if attr != nil {
 		attr.Value = value
 	} else {
 		n.Attributes = append(n.Attributes, &Attribute{name, value})
 	}
+	return n
 }
 
-func (n *Node) RemoveAttribute(name string) {
+func (n *Node) RemoveAttribute(name string) *Node {
 	for i, attr := range n.Attributes {
 		if attr.Name == name {
 			n.Attributes = append(n.Attributes[:1], n.Attributes[i+1:]...)
-			return
+			break
 		}
 	}
+	return n
 }
 
 func (n *Node) GetChild(name string) *Node {
@@ -116,19 +118,21 @@ func (n *Node) NextSibling() *Node {
 	return nil
 }
 
-func (n *Node) AppendChild(c *Node) {
+func (n *Node) AppendChild(c *Node) *Node {
 	c.Document = n.Document
 	c.Parent = n
 	n.Children = append(n.Children, c)
+	return n
 }
 
-func (n *Node) RemoveChild(c *Node) {
+func (n *Node) RemoveChild(c *Node) *Node {
 	for i, a := range n.Children {
 		if a == c {
 			n.Children = append(n.Children[:1], n.Children[i+1:]...)
-			return
+			break
 		}
 	}
+	return n
 }
 
 func (n *Node) FindByID(id string) *Node {

@@ -103,3 +103,18 @@ func ExampleDocument_XMLPretty() {
 	//   </testsuite>
 	// </testsuites>
 }
+
+func ExampleNewDocument() {
+	doc := xmldom.NewDocument("testsuites")
+
+	testsuiteNode := xmldom.NewNode("testsuite").SetAttributeValue("name", "github.com/subchen/go-xmldom")
+	doc.Root.AppendChild(testsuiteNode)
+
+	caseNode1 := xmldom.NewTextNode("testcase", "PASS")
+	caseNode2 := xmldom.NewTextNode("testcase", "PASS")
+	testsuiteNode.AppendChild(caseNode1).AppendChild(caseNode2)
+
+	fmt.Println(doc.XML())
+	// Output:
+	// <?xml version="1.0" encoding="UTF-8"?><testsuites><testsuite name="github.com/subchen/go-xmldom"><testcase>PASS</testcase><testcase>PASS</testcase></testsuite></testsuites>
+}

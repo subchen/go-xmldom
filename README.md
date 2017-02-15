@@ -54,6 +54,21 @@ c := node.QueryOne("//testcase[@name='ExampleParseXML']")
 fmt.Printf("%v: name = %v\n", c.Name, c.GetAttributeValue("name"))
 ```
 
+## Create XML
+
+```go
+doc := xmldom.NewDocument("testsuites")
+
+testsuiteNode := xmldom.NewNode("testsuite").SetAttributeValue("name", "github.com/subchen/go-xmldom")
+doc.Root.AppendChild(testsuiteNode)
+
+caseNode1 := xmldom.NewTextNode("testcase", "PASS")
+caseNode2 := xmldom.NewTextNode("testcase", "PASS")
+testsuiteNode.AppendChild(caseNode1).AppendChild(caseNode2)
+
+fmt.Println(doc.XML())
+```
+
 ## License
 
 Apache 2
