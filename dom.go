@@ -89,7 +89,7 @@ func Parse(r io.Reader) (*Document, error) {
 
 func NewDocument(nodeName string) *Document {
 	d := &Document{
-		ProcInst: `<?xml version="1.0" encoding="UTF-8"?>`,
+		ProcInst: DEFAULT_XML_HEADER,
 		Root:     NewNode(nodeName),
 	}
 	d.Root.Document = d

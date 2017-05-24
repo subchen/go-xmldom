@@ -1,6 +1,12 @@
 package xmldom
 
-import "bytes"
+import (
+	"bytes"
+)
+
+const (
+	DEFAULT_XML_HEADER = `<?xml version="1.0" encoding="UTF-8"?>`
+)
 
 type Document struct {
 	ProcInst   string
