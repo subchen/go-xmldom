@@ -14,6 +14,13 @@ func stringifyProcInst(pi *xml.ProcInst) string {
 	return fmt.Sprintf("<?%s %s?>", pi.Target, string(pi.Inst))
 }
 
+func stringifyDirective(directive *xml.Directive) string {
+	if directive == nil {
+		return ""
+	}
+	return fmt.Sprintf("<!%s>", string(*directive))
+}
+
 func printXML(buf *bytes.Buffer, n *Node, level int, indent string) {
 	pretty := len(indent) > 0
 

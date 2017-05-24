@@ -8,6 +8,7 @@ import (
 
 const (
 	ExampleXml = `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE junit SYSTEM "junit-result.dtd">
 <testsuites>
 	<testsuite tests="2" failures="0" time="0.009" name="github.com/subchen/go-xmldom">
 		<properties>
@@ -85,7 +86,7 @@ func ExampleDocument_XML() {
 	doc := xmldom.Must(xmldom.ParseXML(ExampleXml))
 	fmt.Println(doc.XML())
 	// Output:
-	// <?xml version="1.0" encoding="UTF-8"?><testsuites><testsuite tests="2" failures="0" time="0.009" name="github.com/subchen/go-xmldom"><properties><property name="go.version">go1.8.1</property></properties><testcase classname="go-xmldom" name="ExampleParseXML" time="0.004" /><testcase classname="go-xmldom" name="ExampleParse" time="0.005" /></testsuite></testsuites>
+	// <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE junit SYSTEM "junit-result.dtd"><testsuites><testsuite tests="2" failures="0" time="0.009" name="github.com/subchen/go-xmldom"><properties><property name="go.version">go1.8.1</property></properties><testcase classname="go-xmldom" name="ExampleParseXML" time="0.004" /><testcase classname="go-xmldom" name="ExampleParse" time="0.005" /></testsuite></testsuites>
 }
 
 func ExampleDocument_XMLPretty() {
@@ -93,6 +94,7 @@ func ExampleDocument_XMLPretty() {
 	fmt.Println(doc.XMLPretty())
 	// Output:
 	// <?xml version="1.0" encoding="UTF-8"?>
+	// <!DOCTYPE junit SYSTEM "junit-result.dtd">
 	// <testsuites>
 	//   <testsuite tests="2" failures="0" time="0.009" name="github.com/subchen/go-xmldom">
 	//     <properties>

@@ -70,6 +70,8 @@ func Parse(r io.Reader) (*Document, error) {
 			}
 		case xml.ProcInst:
 			doc.ProcInst = stringifyProcInst(&token)
+		case xml.Directive:
+			doc.Directives = append(doc.Directives, stringifyDirective(&token))
 		}
 
 		// get the next token
