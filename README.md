@@ -18,7 +18,7 @@ $ go get github.com/subchen/go-xmldom
 ## Basic Usage
 
 ```go
-xml = `<testsuite tests="2" failures="0" time="0.009" name="github.com/subchen/go-xmldom">
+xml := `<testsuite tests="2" failures="0" time="0.009" name="github.com/subchen/go-xmldom">
     <testcase classname="go-xmldom" name="ExampleParseXML" time="0.004"></testcase>
     <testcase classname="go-xmldom" name="ExampleParse" time="0.005"></testcase>
 </testsuite>`
