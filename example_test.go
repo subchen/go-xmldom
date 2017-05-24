@@ -17,8 +17,7 @@ const (
 		<testcase classname="go-xmldom" name="ExampleParseXML" time="0.004"></testcase>
 		<testcase classname="go-xmldom" name="ExampleParse" time="0.005"></testcase>
 	</testsuite>
-</testsuites>
-`
+</testsuites>`
 )
 
 func ExampleParseXML() {
@@ -109,14 +108,17 @@ func ExampleDocument_XMLPretty() {
 func ExampleNewDocument() {
 	doc := xmldom.NewDocument("testsuites")
 
-	testsuiteNode := xmldom.NewNode("testsuite").SetAttributeValue("name", "github.com/subchen/go-xmldom")
-	doc.Root.AppendChild(testsuiteNode)
+	testsuiteNode := doc.Root.CreateNode("testsuite").SetAttributeValue("name", "github.com/subchen/go-xmldom")
+	testsuiteNode.CreateNode("testcase").SetAttributeValue("name", "case 1").Text = "PASS"
+	testsuiteNode.CreateNode("testcase").SetAttributeValue("name", "case 2").Text = "FAIL"
 
-	caseNode1 := xmldom.NewTextNode("testcase", "PASS")
-	caseNode2 := xmldom.NewTextNode("testcase", "PASS")
-	testsuiteNode.AppendChild(caseNode1).AppendChild(caseNode2)
-
-	fmt.Println(doc.XML())
+	fmt.Println(doc.XMLPretty())
 	// Output:
-	// <?xml version="1.0" encoding="UTF-8"?><testsuites><testsuite name="github.com/subchen/go-xmldom"><testcase>PASS</testcase><testcase>PASS</testcase></testsuite></testsuites>
+	// <?xml version="1.0" encoding="UTF-8"?>
+	// <testsuites>
+	//   <testsuite name="github.com/subchen/go-xmldom">
+	//     <testcase name="case 1">PASS</testcase>
+	//     <testcase name="case 2">FAIL</testcase>
+	//   </testsuite>
+	// </testsuites>
 }

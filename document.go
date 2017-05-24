@@ -8,6 +8,17 @@ const (
 	DEFAULT_XML_HEADER = `<?xml version="1.0" encoding="UTF-8"?>`
 )
 
+func NewDocument(name string) *Document {
+	d := &Document{
+		ProcInst: DEFAULT_XML_HEADER,
+	}
+	d.Root = &Node{
+		Document: d,
+		Name:     name,
+	}
+	return d
+}
+
 type Document struct {
 	ProcInst   string
 	Directives []string

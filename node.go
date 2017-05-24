@@ -118,6 +118,14 @@ func (n *Node) NextSibling() *Node {
 	return nil
 }
 
+func (n *Node) CreateNode(name string) *Node {
+	newNode := &Node{
+		Name: name,
+	}
+	n.AppendChild(newNode)
+	return newNode
+}
+
 func (n *Node) AppendChild(c *Node) *Node {
 	c.Document = n.Document
 	c.Parent = n

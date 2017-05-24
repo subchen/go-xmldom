@@ -86,25 +86,3 @@ func Parse(r io.Reader) (*Document, error) {
 	// All is good, return the document
 	return doc, nil
 }
-
-func NewDocument(nodeName string) *Document {
-	d := &Document{
-		ProcInst: DEFAULT_XML_HEADER,
-		Root:     NewNode(nodeName),
-	}
-	d.Root.Document = d
-	return d
-}
-
-func NewNode(nodeName string) *Node {
-	return &Node{
-		Name: nodeName,
-	}
-}
-
-func NewTextNode(nodeName string, text string) *Node {
-	return &Node{
-		Name: nodeName,
-		Text: text,
-	}
-}
