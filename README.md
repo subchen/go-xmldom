@@ -59,16 +59,13 @@ fmt.Printf("%v: name = %v\n", c.Name, c.GetAttributeValue("name"))
 ```go
 doc := xmldom.NewDocument("testsuites")
 
-testsuiteNode := xmldom.NewNode("testsuite").SetAttributeValue("name", "github.com/subchen/go-xmldom")
-doc.Root.AppendChild(testsuiteNode)
-
-caseNode1 := xmldom.NewTextNode("testcase", "PASS")
-caseNode2 := xmldom.NewTextNode("testcase", "PASS")
-testsuiteNode.AppendChild(caseNode1).AppendChild(caseNode2)
+suiteNode := doc.Root.CreateNode("testsuite").SetAttributeValue("name", "github.com/subchen/go-xmldom")
+suiteNode.CreateNode("testcase").SetAttributeValue("name", "case 1")
+suiteNode.CreateNode("testcase").SetAttributeValue("name", "case 2")
 
 fmt.Println(doc.XML())
 ```
 
 ## License
 
-Apache 2
+`go-xmldom` is released under the Apache 2.0 license. See [LICENSE](https://github.com/subchen/go-xmldom/blob/master/LICENSE)
