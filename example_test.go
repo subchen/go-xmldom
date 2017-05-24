@@ -14,8 +14,8 @@ const (
 		<properties>
 			<property name="go.version">go1.8.1</property>
 		</properties>
-		<testcase classname="go-xmldom" name="ExampleParseXML" time="0.004"></testcase>
-		<testcase classname="go-xmldom" name="ExampleParse" time="0.005"></testcase>
+		<testcase classname="go-xmldom" id="ExampleParseXML" time="0.004"></testcase>
+		<testcase classname="go-xmldom" id="ExampleParse" time="0.005"></testcase>
 	</testsuite>
 </testsuites>`
 )
@@ -45,11 +45,38 @@ func ExampleNode_GetChildren() {
 	node := xmldom.Must(xmldom.ParseXML(ExampleXml)).Root
 	children := node.FirstChild().GetChildren("testcase")
 	for _, c := range children {
-		fmt.Printf("%v: name = %v\n", c.Name, c.GetAttributeValue("name"))
+		fmt.Printf("%v: id = %v\n", c.Name, c.GetAttributeValue("id"))
 	}
 	// Output:
-	// testcase: name = ExampleParseXML
-	// testcase: name = ExampleParse
+	// testcase: id = ExampleParseXML
+	// testcase: id = ExampleParse
+}
+
+func ExampleNode_FindByID() {
+	root := xmldom.Must(xmldom.ParseXML(ExampleXml)).Root
+	node := root.FindByID("ExampleParseXML")
+	fmt.Println(node.XML())
+	// Output:
+	// <testcase classname="go-xmldom" id="ExampleParseXML" time="0.004" />
+}
+
+func ExampleNode_FindOneByName() {
+	root := xmldom.Must(xmldom.ParseXML(ExampleXml)).Root
+	node := root.FindOneByName("property")
+	fmt.Println(node.XML())
+	// Output:
+	// <property name="go.version">go1.8.1</property>
+}
+
+func ExampleNode_FindByName() {
+	root := xmldom.Must(xmldom.ParseXML(ExampleXml)).Root
+	nodes := root.FindByName("testcase")
+	for _, node := range nodes {
+		fmt.Println(node.XML())
+	}
+	// Output:
+	// <testcase classname="go-xmldom" id="ExampleParseXML" time="0.004" />
+	// <testcase classname="go-xmldom" id="ExampleParse" time="0.005" />
 }
 
 func ExampleNode_Query() {
@@ -62,12 +89,12 @@ func ExampleNode_Query() {
 	// find node matched tag name
 	nodeList := node.Query("//testcase")
 	for _, c := range nodeList {
-		fmt.Printf("%v: name = %v\n", c.Name, c.GetAttributeValue("name"))
+		fmt.Printf("%v: id = %v\n", c.Name, c.GetAttributeValue("id"))
 	}
 	// Output:
 	// children = 5
-	// testcase: name = ExampleParseXML
-	// testcase: name = ExampleParse
+	// testcase: id = ExampleParseXML
+	// testcase: id = ExampleParse
 }
 
 func ExampleNode_QueryOne() {
@@ -75,17 +102,17 @@ func ExampleNode_QueryOne() {
 	// xpath expr: https://github.com/antchfx/xpath
 
 	// find node matched attr name
-	c := node.QueryOne("//testcase[@name='ExampleParseXML']")
-	fmt.Printf("%v: name = %v\n", c.Name, c.GetAttributeValue("name"))
+	c := node.QueryOne("//testcase[@id='ExampleParseXML']")
+	fmt.Printf("%v: id = %v\n", c.Name, c.GetAttributeValue("id"))
 	// Output:
-	// testcase: name = ExampleParseXML
+	// testcase: id = ExampleParseXML
 }
 
 func ExampleDocument_XML() {
 	doc := xmldom.Must(xmldom.ParseXML(ExampleXml))
 	fmt.Println(doc.XML())
 	// Output:
-	// <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE junit SYSTEM "junit-result.dtd"><testsuites><testsuite tests="2" failures="0" time="0.009" name="github.com/subchen/go-xmldom"><properties><property name="go.version">go1.8.1</property></properties><testcase classname="go-xmldom" name="ExampleParseXML" time="0.004" /><testcase classname="go-xmldom" name="ExampleParse" time="0.005" /></testsuite></testsuites>
+	// <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE junit SYSTEM "junit-result.dtd"><testsuites><testsuite tests="2" failures="0" time="0.009" name="github.com/subchen/go-xmldom"><properties><property name="go.version">go1.8.1</property></properties><testcase classname="go-xmldom" id="ExampleParseXML" time="0.004" /><testcase classname="go-xmldom" id="ExampleParse" time="0.005" /></testsuite></testsuites>
 }
 
 func ExampleDocument_XMLPretty() {
@@ -99,8 +126,8 @@ func ExampleDocument_XMLPretty() {
 	//     <properties>
 	//       <property name="go.version">go1.8.1</property>
 	//     </properties>
-	//     <testcase classname="go-xmldom" name="ExampleParseXML" time="0.004" />
-	//     <testcase classname="go-xmldom" name="ExampleParse" time="0.005" />
+	//     <testcase classname="go-xmldom" id="ExampleParseXML" time="0.004" />
+	//     <testcase classname="go-xmldom" id="ExampleParse" time="0.005" />
 	//   </testsuite>
 	// </testsuites>
 }

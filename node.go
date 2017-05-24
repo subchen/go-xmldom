@@ -149,10 +149,40 @@ func (n *Node) FindByID(id string) *Node {
 	}
 
 	for _, c := range n.Children {
-		return c.FindByID(id)
+		if x := c.FindByID(id); x != nil {
+			return x
+		}
 	}
 
 	return nil
+}
+
+func (n *Node) FindOneByName(name string) *Node {
+	if n.Name == name {
+		return n
+	}
+
+	for _, c := range n.Children {
+		if x := c.FindOneByName(name); x != nil {
+			return x
+		}
+	}
+
+	return nil
+}
+
+func (n *Node) FindByName(name string) []*Node {
+	var nodes []*Node
+
+	if n.Name == name {
+		nodes = append(nodes, n)
+	}
+
+	for _, c := range n.Children {
+		nodes = append(nodes, c.FindByName(name)...)
+	}
+
+	return nodes
 }
 
 func (n *Node) Query(xpath string) []*Node {
