@@ -50,7 +50,7 @@ func (n *Node) SetAttributeValue(name string, value string) *Node {
 func (n *Node) RemoveAttribute(name string) *Node {
 	for i, attr := range n.Attributes {
 		if attr.Name == name {
-			n.Attributes = append(n.Attributes[:1], n.Attributes[i+1:]...)
+			n.Attributes = append(n.Attributes[:i], n.Attributes[i+1:]...)
 			break
 		}
 	}
@@ -136,7 +136,7 @@ func (n *Node) AppendChild(c *Node) *Node {
 func (n *Node) RemoveChild(c *Node) *Node {
 	for i, a := range n.Children {
 		if a == c {
-			n.Children = append(n.Children[:1], n.Children[i+1:]...)
+			n.Children = append(n.Children[:i], n.Children[i+1:]...)
 			break
 		}
 	}
