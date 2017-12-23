@@ -46,12 +46,27 @@ func Parse(r io.Reader) (*Document, error) {
 			el := new(Node)
 			el.Document = doc
 			el.Parent = e
+			el.NS = doc.getNamespaceByURI(token.Name.Space)
 			el.Name = token.Name.Local
+
 			for _, attr := range token.Attr {
-				el.Attributes = append(el.Attributes, &Attribute{
-					Name:  attr.Name.Local,
-					Value: attr.Value,
-				})
+				if attr.Name.Local == "xmlns" && attr.Name.Space == "" {
+					doc.NamespaceList = append(doc.NamespaceList, &Namespace{
+						Name: "",
+						URI:  attr.Value,
+					})
+				} else if attr.Name.Space == "xmlns" {
+					doc.NamespaceList = append(doc.NamespaceList, &Namespace{
+						Name: attr.Name.Local,
+						URI:  attr.Value,
+					})
+				} else {
+					el.Attributes = append(el.Attributes, &Attribute{
+						NS:    doc.getNamespaceByURI(attr.Name.Space),
+						Name:  attr.Name.Local,
+						Value: attr.Value,
+					})
+				}
 			}
 			if e != nil {
 				e.Children = append(e.Children, el)

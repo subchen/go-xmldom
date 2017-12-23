@@ -5,6 +5,7 @@ import "bytes"
 type Node struct {
 	Document   *Document
 	Parent     *Node
+	NS         *Namespace
 	Name       string
 	Attributes []*Attribute
 	Children   []*Node
@@ -12,6 +13,7 @@ type Node struct {
 }
 
 type Attribute struct {
+	NS    *Namespace
 	Name  string
 	Value string
 }
@@ -42,7 +44,7 @@ func (n *Node) SetAttributeValue(name string, value string) *Node {
 	if attr != nil {
 		attr.Value = value
 	} else {
-		n.Attributes = append(n.Attributes, &Attribute{name, value})
+		n.Attributes = append(n.Attributes, &Attribute{nil, name, value})
 	}
 	return n
 }
@@ -199,12 +201,12 @@ func (n *Node) QueryEach(xpath string, cb func(int, *Node)) {
 
 func (n *Node) XML() string {
 	buf := new(bytes.Buffer)
-	printXML(buf, n, 0, "")
+	printXML(buf, n, 0, "", true)
 	return buf.String()
 }
 
 func (n *Node) XMLPretty() string {
 	buf := new(bytes.Buffer)
-	printXML(buf, n, 0, "  ")
+	printXML(buf, n, 0, "  ", true)
 	return buf.String()
 }

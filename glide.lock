@@ -1,6 +1,6 @@
 hash: 829e8e62c0dd6feb82df2fac05752dd8d695486dae30424f69c244df9e7af07d
-updated: 2017-05-20T11:55:24.707024463+08:00
+updated: 2017-12-23T14:56:09.3544123Z
 imports:
 - name: github.com/antchfx/xpath
-  version: 1f3266e7730781347c9decd229c1fe1c18be760c
+  version: 58d12fe685d684ed55aab3b988394652025e36dc
 testImports: []
