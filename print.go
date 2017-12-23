@@ -36,15 +36,17 @@ func printXML(buf *bytes.Buffer, n *Node, level int, indent string, withNS bool)
 
 	if withNS {
 		for _, ns := range n.Document.NamespaceList {
-			buf.WriteString(" xmlns")
-			if ns.Name != "" {
-				buf.WriteByte(':')
-				buf.WriteString(ns.Name)
+			if ns.Name != ns.URI {
+				buf.WriteString(" xmlns")
+				if ns.Name != "" {
+					buf.WriteByte(':')
+					buf.WriteString(ns.Name)
+				}
+				buf.WriteByte('=')
+				buf.WriteByte('"')
+				xml.Escape(buf, []byte(ns.URI))
+				buf.WriteByte('"')
 			}
-			buf.WriteByte('=')
-			buf.WriteByte('"')
-			xml.Escape(buf, []byte(ns.URI))
-			buf.WriteByte('"')
 		}
 	}
 

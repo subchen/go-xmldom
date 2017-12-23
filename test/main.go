@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	dom, err := xmldom.ParseFile("test/ovfenv.xml")
+	dom, err := xmldom.ParseFile("test/ovfenv-1.xml")
 	if err != nil {
 		panic(err)
 	}

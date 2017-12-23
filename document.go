@@ -41,7 +41,15 @@ func (d *Document) getNamespaceByURI(uri string) *Namespace {
 			}
 		}
 	}
-	return nil
+
+	// create a new namespace
+	ns := &Namespace{
+		Name: uri,
+		URI:  uri,
+	}
+	d.NamespaceList = append(d.NamespaceList, ns)
+
+	return ns
 }
 
 func (d *Document) XML() string {

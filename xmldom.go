@@ -46,7 +46,9 @@ func Parse(r io.Reader) (*Document, error) {
 			el := new(Node)
 			el.Document = doc
 			el.Parent = e
-			el.NS = doc.getNamespaceByURI(token.Name.Space)
+			if doc.Root != nil {
+				el.NS = doc.getNamespaceByURI(token.Name.Space)
+			}
 			el.Name = token.Name.Local
 
 			for _, attr := range token.Attr {
