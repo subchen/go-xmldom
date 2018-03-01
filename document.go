@@ -48,3 +48,17 @@ func (d *Document) XMLPretty() string {
 	buf.WriteString(d.Root.XMLPretty())
 	return buf.String()
 }
+
+func (d *Document) XMLPrettyEx(indent string) string {
+	buf := new(bytes.Buffer)
+	if len(d.ProcInst) > 0 {
+		buf.WriteString(d.ProcInst)
+		buf.WriteByte('\n')
+	}
+	for _, directive := range d.Directives {
+		buf.WriteString(directive)
+		buf.WriteByte('\n')
+	}
+	buf.WriteString(d.Root.XMLPrettyEx(indent))
+	return buf.String()
+}
