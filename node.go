@@ -208,3 +208,9 @@ func (n *Node) XMLPretty() string {
 	printXML(buf, n, 0, "  ")
 	return buf.String()
 }
+
+func (n *Node) XMLPrettyEx(indent string) string {
+	buf := new(bytes.Buffer)
+	printXML(buf, n, 0, indent)
+	return buf.String()
+}
