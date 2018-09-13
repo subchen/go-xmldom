@@ -9,12 +9,22 @@ const (
 )
 
 func NewDocument(name string) *Document {
+	return NewDocumentWithNS(name, nil)
+}
+
+func NewDocumentWithNS(name string, ns *Namespace) *Document {
 	d := &Document{
 		ProcInst: DEFAULT_XML_HEADER,
 	}
+
+	if ns != nil {
+		d.NamespaceList = []*Namespace{ns}
+	}
+
 	d.Root = &Node{
 		Document: d,
 		Name:     name,
+		NS:       ns,
 	}
 	return d
 }

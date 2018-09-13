@@ -121,8 +121,34 @@ func (n *Node) NextSibling() *Node {
 }
 
 func (n *Node) CreateNode(name string) *Node {
+	return n.CreateNodeWithNS(name, nil)
+}
+
+// CreateNodeWithNS will create a node with the requested namespace.
+// If the namespace already exists (matching by URI) then the pre-existing
+// namespace will be used, *even if the name is different.*
+func (n *Node) CreateNodeWithNS(name string, ns *Namespace) *Node {
+	if ns != nil {
+		found := false
+
+		if n.Document.NamespaceList != nil {
+			for _, existingNS := range n.Document.NamespaceList {
+				if existingNS.URI == ns.URI {
+					ns = existingNS
+					found = true
+					break
+				}
+			}
+		}
+
+		if !found {
+			n.Document.NamespaceList = append(n.Document.NamespaceList, ns)
+		}
+	}
+
 	newNode := &Node{
 		Name: name,
+		NS:   ns,
 	}
 	n.AppendChild(newNode)
 	return newNode
