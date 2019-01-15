@@ -11,7 +11,9 @@ const (
 
 func NewDocument(name string) *Document {
 	d := &Document{
-		ProcInst: DEFAULT_XML_HEADER,
+		ProcInst:        DEFAULT_XML_HEADER,
+		EmptyElementTag: true,
+		TextSafeMode:    true,
 	}
 	d.Root = &Node{
 		Document: d,
@@ -23,9 +25,11 @@ func NewDocument(name string) *Document {
 }
 
 type Document struct {
-	ProcInst   string
-	Directives []string
-	Root       *Node
+	ProcInst        string
+	Directives      []string
+	EmptyElementTag bool
+	TextSafeMode    bool
+	Root            *Node
 }
 
 func (d *Document) XML() string {

@@ -2,6 +2,7 @@ package xmldom
 
 import (
 	"fmt"
+	"bytes"
 )
 
 const (
@@ -25,6 +26,20 @@ const (
 			<ns1:Item>item1</ns1:Item>
 			<ns1:Item>item2</ns1:Item>
 		</ns0:Content>
+		<ns2:Other xmlns:ns2="namespace_2" param="test_param_value"/>
+	</S:Body>
+</S:Envelope>`
+
+	ExampleInheritNamespaceXML = `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE junit SYSTEM "junit-result.dtd">
+<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+	<S:Body>
+		<ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+			<ds:SignedInfo>
+				<ds:DigestValue>KHDHFKSFH2IEFIDHJKSHFKJHSKDJFH==
+				</ds:DigestValue>
+			</ds:SignedInfo>
+		</ds:Signature>
 	</S:Body>
 </S:Envelope>`
 )
@@ -55,6 +70,22 @@ func ExampleParseNamespacesXML() {
 	// attributes.len = 1
 	// children.len = 1
 	// root = true
+}
+
+func ExampleEmptyElementTag() {
+	doc := Must(ParseXML(ExampleNamespaceXml))
+	doc.EmptyElementTag = true
+	fmt.Println(doc.Root.XML())
+	// Output:
+	// <S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"><S:Body><ns0:Content xmlns:ns0="namespace_0"><ns1:Item>item1</ns1:Item><ns1:Item>item2</ns1:Item></ns0:Content><ns2:Other xmlns:ns2="namespace_2" param="test_param_value" /></S:Body></S:Envelope>
+}
+
+func ExampleStartTagEndTag() {
+	doc := Must(ParseXML(ExampleNamespaceXml))
+	doc.EmptyElementTag = false
+	fmt.Println(doc.Root.XML())
+	// Output:
+	// <S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"><S:Body><ns0:Content xmlns:ns0="namespace_0"><ns1:Item>item1</ns1:Item><ns1:Item>item2</ns1:Item></ns0:Content><ns2:Other xmlns:ns2="namespace_2" param="test_param_value"></ns2:Other></S:Body></S:Envelope>
 }
 
 func ExampleNode_GetAttribute() {
@@ -172,4 +203,26 @@ func ExampleNewDocument() {
 	//     <testcase name="case 2">FAIL</testcase>
 	//   </testsuite>
 	// </testsuites>
+}
+
+func ExampleInheritNamespace() {
+	doc := NewDocument("")
+	doc.EmptyElementTag = false
+	doc.TextSafeMode = false
+	err := doc.Parse(
+		bytes.NewReader(
+			[]byte(ExampleInheritNamespaceXML),
+		),
+	)
+	fmt.Println(err)
+	fmt.Println(doc.Root.XML())
+
+	node := doc.Root.QueryOne("//Body/Signature/SignedInfo")
+	fmt.Println(node.XML())
+	// Output:
+	// <nil>
+	// <S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/"><S:Body><ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#"><ds:SignedInfo><ds:DigestValue>KHDHFKSFH2IEFIDHJKSHFKJHSKDJFH==
+	// 				</ds:DigestValue></ds:SignedInfo></ds:Signature></S:Body></S:Envelope>
+	// <ds:SignedInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#"><ds:DigestValue>KHDHFKSFH2IEFIDHJKSHFKJHSKDJFH==
+	// 				</ds:DigestValue></ds:SignedInfo>
 }
