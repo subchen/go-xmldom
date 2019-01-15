@@ -16,6 +16,14 @@ func Must(doc *Document, err error) *Document {
 	return doc
 }
 
+func ParseObject(v interface{}) (*Document, error) {
+	data, err := xml.Marshal(v)
+	if err != nil {
+		return nil, err
+	}
+	return Parse(bytes.NewReader(data))
+}
+
 func ParseXML(s string) (*Document, error) {
 	return Parse(strings.NewReader(s))
 }
