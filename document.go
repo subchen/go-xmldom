@@ -2,6 +2,7 @@ package xmldom
 
 import (
 	"bytes"
+	"encoding/xml"
 )
 
 const (
@@ -14,7 +15,9 @@ func NewDocument(name string) *Document {
 	}
 	d.Root = &Node{
 		Document: d,
-		Name:     name,
+		Name: xml.Name{
+			Local: name,
+		},
 	}
 	return d
 }

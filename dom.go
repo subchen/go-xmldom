@@ -16,6 +16,14 @@ func Must(doc *Document, err error) *Document {
 	return doc
 }
 
+func ParseObject(v interface{}) (*Document, error) {
+	data, err := xml.Marshal(v)
+	if err != nil {
+		return nil, err
+	}
+	return Parse(bytes.NewReader(data))
+}
+
 func ParseXML(s string) (*Document, error) {
 	return Parse(strings.NewReader(s))
 }
@@ -46,12 +54,11 @@ func Parse(r io.Reader) (*Document, error) {
 			el := new(Node)
 			el.Document = doc
 			el.Parent = e
-			el.Name = token.Name.Local
+			el.Name = token.Name
+
 			for _, attr := range token.Attr {
-				el.Attributes = append(el.Attributes, &Attribute{
-					Name:  attr.Name.Local,
-					Value: attr.Value,
-				})
+				attribute := attr
+				el.Attributes = append(el.Attributes, &attribute)
 			}
 			if e != nil {
 				e.Children = append(e.Children, el)
