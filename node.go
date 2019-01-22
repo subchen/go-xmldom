@@ -3,6 +3,7 @@ package xmldom
 import (
 	"bytes"
 	"encoding/xml"
+	"errors"
 )
 
 type Node struct {
@@ -244,4 +245,13 @@ func (n *Node) XMLPrettyEx(indent string) string {
 	p := printer{}
 	p.printXML(buf, n, 0, indent)
 	return buf.String()
+}
+
+func (n *Node) ChangeTo(node *Node) error {
+	if node == nil {
+		return errors.New("empty new node")
+	}
+	node.ChangeDocumentTo(n.Document, n.Parent)
+	*n = *node
+	return nil
 }

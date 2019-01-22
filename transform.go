@@ -1,39 +1,27 @@
 package xmldom
 
-import (
-	"fmt"
-	"bytes"
-	"errors"
-)
-
 type TransformFunc func([]byte) ([]byte, error)
 
-func Transform(n *Node, f TransformFunc) (*Node, error) {
-	switch {
-	case n == nil:
-		return nil, errors.New("empty node")
-	case f == nil:
-		return nil, errors.New("empty transform func")
-	}
-	data, err := f([]byte(n.XML()))
-	if err != nil {
-		return nil, err
-	}
-	doc, err := Parse(bytes.NewReader(data))
-	if err != nil {
-		return nil, fmt.Errorf("parse transform xml error: %v", err)
-	}
-	root := doc.Root
-	root.Document = n.Document
-	root.Parent = n.Parent
-	return root, err
-}
-
 func (n *Node) Transform(f TransformFunc) error {
-	root, err := Transform(n, f)
+	data, err := f([]byte(n.XML()))
 	if err != nil {
 		return err
 	}
-	*n = *root
+	return n.ParseXML(string(data))
+}
+
+func (n *Node) ParseXML(data string) error {
+	doc := *n.Document
+	doc.ParseXML(data)
+	doc.Root.ChangeDocumentTo(n.Document, n.Parent)
+	*n = *doc.Root
 	return nil
+}
+
+func (n *Node) ChangeDocumentTo(doc *Document, parent *Node) {
+	n.Document = doc
+	n.Parent = parent
+	for _, child := range n.Children {
+		child.ChangeDocumentTo(doc, n)
+	}
 }
