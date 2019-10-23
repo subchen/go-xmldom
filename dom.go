@@ -46,12 +46,11 @@ func Parse(r io.Reader) (*Document, error) {
 			el := new(Node)
 			el.Document = doc
 			el.Parent = e
-			el.Name = token.Name.Local
+			el.Name = token.Name
+
 			for _, attr := range token.Attr {
-				el.Attributes = append(el.Attributes, &Attribute{
-					Name:  attr.Name.Local,
-					Value: attr.Value,
-				})
+				attribute := attr
+				el.Attributes = append(el.Attributes, &attribute)
 			}
 			if e != nil {
 				e.Children = append(e.Children, el)

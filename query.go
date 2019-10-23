@@ -56,9 +56,9 @@ func (x *xmlNodeNavigator) NodeType() xpath.NodeType {
 
 func (x *xmlNodeNavigator) LocalName() string {
 	if x.attrIndex != -1 {
-		return x.curr.Attributes[x.attrIndex].Name
+		return x.curr.Attributes[x.attrIndex].Name.Local
 	}
-	return x.curr.Name
+	return x.curr.Name.Local
 }
 
 func (x *xmlNodeNavigator) Prefix() string {

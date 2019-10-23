@@ -21,23 +21,47 @@ func stringifyDirective(directive *xml.Directive) string {
 	return fmt.Sprintf("<!%s>", string(*directive))
 }
 
-func printXML(buf *bytes.Buffer, n *Node, level int, indent string) {
+type printer struct{}
+
+func (p *printer) printXML(buf *bytes.Buffer, n *Node, level int, indent string) {
 	pretty := len(indent) > 0
 
 	if pretty {
 		buf.WriteString(strings.Repeat(indent, level))
 	}
+
+	space := n.GetNamespace()
+
 	buf.WriteByte('<')
-	buf.WriteString(n.Name)
+	if space != nil {
+		buf.WriteString(space.Name.Local)
+		buf.WriteByte(':')
+	}
+	buf.WriteString(n.Name.Local)
 
 	if len(n.Attributes) > 0 {
 		for _, attr := range n.Attributes {
-			buf.WriteByte(' ')
-			buf.WriteString(attr.Name)
-			buf.WriteByte('=')
-			buf.WriteByte('"')
-			xml.Escape(buf, []byte(attr.Value))
-			buf.WriteByte('"')
+
+			if attr.Name.Space == "" {
+				buf.WriteByte(' ')
+				buf.WriteString(attr.Name.Local)
+				buf.WriteByte('=')
+				buf.WriteByte('"')
+				xml.Escape(buf, []byte(attr.Value))
+				buf.WriteByte('"')
+			} else if attr.Name.Space == "xmlns" {
+				if space != nil && attr.Name.Local == space.Name.Local {
+					buf.WriteByte(' ')
+					buf.WriteString(attr.Name.Space)
+					buf.WriteByte(':')
+					buf.WriteString(attr.Name.Local)
+					buf.WriteByte('=')
+					buf.WriteByte('"')
+					xml.Escape(buf, []byte(attr.Value))
+					buf.WriteByte('"')
+				}
+
+			}
 		}
 	}
 
@@ -56,7 +80,7 @@ func printXML(buf *bytes.Buffer, n *Node, level int, indent string) {
 			buf.WriteByte('\n')
 		}
 		for _, c := range n.Children {
-			printXML(buf, c, level+1, indent)
+			p.printXML(buf, c, level+1, indent)
 		}
 	}
 	if len(n.Text) > 0 {
@@ -67,7 +91,11 @@ func printXML(buf *bytes.Buffer, n *Node, level int, indent string) {
 		buf.WriteString(strings.Repeat(indent, level))
 	}
 	buf.WriteString("</")
-	buf.WriteString(n.Name)
+	if space != nil {
+		buf.WriteString(space.Name.Local)
+		buf.WriteByte(':')
+	}
+	buf.WriteString(n.Name.Local)
 	buf.WriteByte('>')
 
 	if pretty {
