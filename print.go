@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/xml"
 	"fmt"
+	"io"
 	"strings"
 )
 
@@ -58,7 +59,7 @@ func (p *printer) printXML(buf *bytes.Buffer, n *Node, level int, indent string)
 				buf.WriteString(attr.Name.Local)
 				buf.WriteByte('=')
 				buf.WriteByte('"')
-				xml.Escape(buf, []byte(attr.Value))
+				xmlEscape( buf, []byte(attr.Value) )
 				buf.WriteByte('"')
 			} else if attr.Name.Space == "xmlns" {
 				// выставляем xmlns для тех тегов где он был изначально прописан,
@@ -70,7 +71,7 @@ func (p *printer) printXML(buf *bytes.Buffer, n *Node, level int, indent string)
 					buf.WriteString(attr.Name.Local)
 					buf.WriteByte('=')
 					buf.WriteByte('"')
-					xml.Escape(buf, []byte(attr.Value))
+					xmlEscape( buf, []byte(attr.Value) )
 					buf.WriteByte('"')
 				}
 			}
@@ -119,3 +120,16 @@ func (p *printer) printXML(buf *bytes.Buffer, n *Node, level int, indent string)
 		buf.WriteByte('\n')
 	}
 }
+
+
+
+func xmlEscape( w io.Writer, value []byte ) {
+	var res bytes.Buffer
+	xml.Escape(&res, value)
+
+	out := res.String()
+	newOut := strings.Replace(out, "&#34;" ,"&quot;" , -1  )
+
+	fmt.Fprintf( w, "%s", newOut  )
+}
+
