@@ -161,7 +161,25 @@ func (n *Node) AppendChild(c *Node) *Node {
 	n.Children = append(n.Children, c)
 	return n
 }
+func (n *Node) CreateNodeAt(index int, name string) *Node {
 
+	newNode := &Node{
+		Name:     name,
+		Parent:   n,
+		Document: n.Document}
+	n.Children = append(n.Children, &Node{})
+	copy(n.Children[index+1:], n.Children[index:])
+	n.Children[index] = newNode
+	return newNode
+}
+func (n *Node) IndexNode(c *Node) int {
+	for i, a := range n.Children {
+		if a == c {
+			return i
+		}
+	}
+	return -1
+}
 func (n *Node) RemoveChild(c *Node) *Node {
 	for i, a := range n.Children {
 		if a == c {
