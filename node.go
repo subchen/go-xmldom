@@ -1,28 +1,49 @@
 package xmldom
 
-import "bytes"
+import (
+	"bytes"
+	"encoding/xml"
+	"errors"
+)
 
 type Node struct {
 	Document   *Document
 	Parent     *Node
-	Name       string
-	Attributes []*Attribute
+	Name       xml.Name
+	Attributes []*xml.Attr
 	Children   []*Node
 	Text       string
-}
-
-type Attribute struct {
-	Name  string
-	Value string
 }
 
 func (n *Node) Root() *Node {
 	return n.Document.Root
 }
 
-func (n *Node) GetAttribute(name string) *Attribute {
+func (n *Node) GetNamespaces() (names Namespaces) {
 	for _, attr := range n.Attributes {
-		if attr.Name == name {
+		if attr.Name.Space == "xmlns" {
+			names = append(names, *attr)
+		}
+	}
+	return names
+}
+
+func (n *Node) GetNamespace() (attr *xml.Attr) {
+	node := n
+	for attr == nil && node != nil {
+		names := node.GetNamespaces()
+		attr = names.GetName(n.Name.Space)
+		if attr != nil {
+			return attr
+		}
+		node = node.Parent
+	}
+	return nil
+}
+
+func (n *Node) GetAttribute(name string) *xml.Attr {
+	for _, attr := range n.Attributes {
+		if attr.Name.Local == name {
 			return attr
 		}
 	}
@@ -42,14 +63,20 @@ func (n *Node) SetAttributeValue(name string, value string) *Node {
 	if attr != nil {
 		attr.Value = value
 	} else {
-		n.Attributes = append(n.Attributes, &Attribute{name, value})
+		attr := xml.Attr{
+			Name: xml.Name{
+				Local: name,
+			},
+			Value: value,
+		}
+		n.Attributes = append(n.Attributes, &attr)
 	}
 	return n
 }
 
 func (n *Node) RemoveAttribute(name string) *Node {
 	for i, attr := range n.Attributes {
-		if attr.Name == name {
+		if attr.Name.Local == name {
 			n.Attributes = append(n.Attributes[:i], n.Attributes[i+1:]...)
 			break
 		}
@@ -59,7 +86,7 @@ func (n *Node) RemoveAttribute(name string) *Node {
 
 func (n *Node) GetChild(name string) *Node {
 	for _, c := range n.Children {
-		if c.Name == name {
+		if c.Name.Local == name {
 			return c
 		}
 	}
@@ -69,7 +96,7 @@ func (n *Node) GetChild(name string) *Node {
 func (n *Node) GetChildren(name string) []*Node {
 	var nodes []*Node
 	for _, c := range n.Children {
-		if c.Name == name {
+		if c.Name.Local == name {
 			nodes = append(nodes, c)
 		}
 	}
@@ -120,7 +147,9 @@ func (n *Node) NextSibling() *Node {
 
 func (n *Node) CreateNode(name string) *Node {
 	newNode := &Node{
-		Name: name,
+		Name: xml.Name{
+			Local: name,
+		},
 	}
 	n.AppendChild(newNode)
 	return newNode
@@ -132,7 +161,25 @@ func (n *Node) AppendChild(c *Node) *Node {
 	n.Children = append(n.Children, c)
 	return n
 }
+func (n *Node) CreateNodeAt(index int, name string) *Node {
 
+	newNode := &Node{
+		Name:     name,
+		Parent:   n,
+		Document: n.Document}
+	n.Children = append(n.Children, &Node{})
+	copy(n.Children[index+1:], n.Children[index:])
+	n.Children[index] = newNode
+	return newNode
+}
+func (n *Node) IndexNode(c *Node) int {
+	for i, a := range n.Children {
+		if a == c {
+			return i
+		}
+	}
+	return -1
+}
 func (n *Node) RemoveChild(c *Node) *Node {
 	for i, a := range n.Children {
 		if a == c {
@@ -158,7 +205,7 @@ func (n *Node) FindByID(id string) *Node {
 }
 
 func (n *Node) FindOneByName(name string) *Node {
-	if n.Name == name {
+	if n.Name.Local == name {
 		return n
 	}
 
@@ -174,7 +221,7 @@ func (n *Node) FindOneByName(name string) *Node {
 func (n *Node) FindByName(name string) []*Node {
 	var nodes []*Node
 
-	if n.Name == name {
+	if n.Name.Local == name {
 		nodes = append(nodes, n)
 	}
 
@@ -199,18 +246,30 @@ func (n *Node) QueryEach(xpath string, cb func(int, *Node)) {
 
 func (n *Node) XML() string {
 	buf := new(bytes.Buffer)
-	printXML(buf, n, 0, "")
+	p := printer{}
+	p.printXML(buf, n, 0, "")
 	return buf.String()
 }
 
 func (n *Node) XMLPretty() string {
 	buf := new(bytes.Buffer)
-	printXML(buf, n, 0, "  ")
+	p := printer{}
+	p.printXML(buf, n, 0, "  ")
 	return buf.String()
 }
 
 func (n *Node) XMLPrettyEx(indent string) string {
 	buf := new(bytes.Buffer)
-	printXML(buf, n, 0, indent)
+	p := printer{}
+	p.printXML(buf, n, 0, indent)
 	return buf.String()
+}
+
+func (n *Node) ChangeTo(node *Node) error {
+	if node == nil {
+		return errors.New("empty new node")
+	}
+	node.ChangeDocumentTo(n.Document, n.Parent)
+	*n = *node
+	return nil
 }
