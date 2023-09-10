@@ -2,6 +2,7 @@ package xmldom_test
 
 import (
 	"fmt"
+	"testing"
 
 	"github.com/subchen/go-xmldom"
 )
@@ -16,6 +17,7 @@ const (
 		</properties>
 		<testcase classname="go-xmldom" id="ExampleParseXML" time="0.004"></testcase>
 		<testcase classname="go-xmldom" id="ExampleParse" time="0.005"></testcase>
+    <testcase xmlns:test="mock" id="AttrNamespace"></testcase>
 	</testsuite>
 </testsuites>`
 )
@@ -148,4 +150,13 @@ func ExampleNewDocument() {
 	//     <testcase name="case 2">FAIL</testcase>
 	//   </testsuite>
 	// </testsuites>
+}
+
+func TestAttrNamespace(t *testing.T) {
+	root := xmldom.Must(xmldom.ParseXML(ExampleXml)).Root
+	node := root.FindByID("AttrNamespace")
+
+	if node.Attributes[0].Name != "xmlns:test" {
+		t.Fatalf("Expected attribute name to be xmlns:test, got=%s", node.Attributes[0].Name)
+	}
 }
