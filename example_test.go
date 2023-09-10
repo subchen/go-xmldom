@@ -52,6 +52,7 @@ func ExampleNode_GetChildren() {
 	// Output:
 	// testcase: id = ExampleParseXML
 	// testcase: id = ExampleParse
+	// testcase: id = AttrNamespace
 }
 
 func ExampleNode_FindByID() {
@@ -79,6 +80,7 @@ func ExampleNode_FindByName() {
 	// Output:
 	// <testcase classname="go-xmldom" id="ExampleParseXML" time="0.004" />
 	// <testcase classname="go-xmldom" id="ExampleParse" time="0.005" />
+	// <testcase xmlns:test="mock" id="AttrNamespace" />
 }
 
 func ExampleNode_Query() {
@@ -94,9 +96,10 @@ func ExampleNode_Query() {
 		fmt.Printf("%v: id = %v\n", c.Name, c.GetAttributeValue("id"))
 	}
 	// Output:
-	// children = 5
+	// children = 6
 	// testcase: id = ExampleParseXML
 	// testcase: id = ExampleParse
+	// testcase: id = AttrNamespace
 }
 
 func ExampleNode_QueryOne() {
@@ -114,7 +117,7 @@ func ExampleDocument_XML() {
 	doc := xmldom.Must(xmldom.ParseXML(ExampleXml))
 	fmt.Println(doc.XML())
 	// Output:
-	// <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE junit SYSTEM "junit-result.dtd"><testsuites><testsuite tests="2" failures="0" time="0.009" name="github.com/subchen/go-xmldom"><properties><property name="go.version">go1.8.1</property></properties><testcase classname="go-xmldom" id="ExampleParseXML" time="0.004" /><testcase classname="go-xmldom" id="ExampleParse" time="0.005" /></testsuite></testsuites>
+	// <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE junit SYSTEM "junit-result.dtd"><testsuites><testsuite tests="2" failures="0" time="0.009" name="github.com/subchen/go-xmldom"><properties><property name="go.version">go1.8.1</property></properties><testcase classname="go-xmldom" id="ExampleParseXML" time="0.004" /><testcase classname="go-xmldom" id="ExampleParse" time="0.005" /><testcase xmlns:test="mock" id="AttrNamespace" /></testsuite></testsuites>
 }
 
 func ExampleDocument_XMLPretty() {
@@ -130,6 +133,7 @@ func ExampleDocument_XMLPretty() {
 	//     </properties>
 	//     <testcase classname="go-xmldom" id="ExampleParseXML" time="0.004" />
 	//     <testcase classname="go-xmldom" id="ExampleParse" time="0.005" />
+	//     <testcase xmlns:test="mock" id="AttrNamespace" />
 	//   </testsuite>
 	// </testsuites>
 }
