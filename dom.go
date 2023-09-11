@@ -4,6 +4,7 @@ package xmldom
 import (
 	"bytes"
 	"encoding/xml"
+	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -48,8 +49,12 @@ func Parse(r io.Reader) (*Document, error) {
 			el.Parent = e
 			el.Name = token.Name.Local
 			for _, attr := range token.Attr {
+				name := attr.Name.Local
+				if attr.Name.Space != "" {
+					name = fmt.Sprintf("%s:%s", attr.Name.Space, attr.Name.Local)
+				}
 				el.Attributes = append(el.Attributes, &Attribute{
-					Name:  attr.Name.Local,
+					Name:  name,
 					Value: attr.Value,
 				})
 			}
