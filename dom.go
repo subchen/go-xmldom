@@ -10,6 +10,17 @@ import (
 	"strings"
 )
 
+const (
+	xmlPrefix   = "xml"
+	xmlUrl      = "http://www.w3.org/XML/1998/namespace"
+	xmlnsPrefix = "xmlns"
+	xmlnsUrl    = "http://www.w3.org/2000/xmlns"
+	xlinkPrefix = "xlink"
+	xlinkUrl    = "http://www.w3.org/1999/xlink"
+	xsiPrefix   = "xsi"
+	xsiUrl      = "http://www.w3.org/2001/XMLSchema-instance"
+)
+
 func Must(doc *Document, err error) *Document {
 	if err != nil {
 		panic(err)
@@ -49,9 +60,23 @@ func Parse(r io.Reader) (*Document, error) {
 			el.Parent = e
 			el.Name = token.Name.Local
 			for _, attr := range token.Attr {
-				name := attr.Name.Local
+				var name, ns string
 				if attr.Name.Space != "" {
-					name = fmt.Sprintf("%s:%s", attr.Name.Space, attr.Name.Local)
+					ns = attr.Name.Space
+					switch ns {
+					case xmlnsUrl:
+						name = fmt.Sprintf("%s:%s", xmlnsPrefix, attr.Name.Local)
+					case xmlUrl:
+						name = fmt.Sprintf("%s:%s", xmlPrefix, attr.Name.Local)
+					case xlinkUrl:
+						name = fmt.Sprintf("%s:%s", xlinkPrefix, attr.Name.Local)
+					case xsiUrl:
+						name = fmt.Sprintf("%s:%s", xsiPrefix, attr.Name.Local)
+					default:
+						name = fmt.Sprintf("%s:%s", attr.Name.Space, attr.Name.Local)
+					}
+				} else {
+					name = attr.Name.Local
 				}
 				el.Attributes = append(el.Attributes, &Attribute{
 					Name:  name,
