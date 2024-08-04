@@ -16,7 +16,8 @@ const (
 		</properties>
 		<testcase classname="go-xmldom" id="ExampleParseXML" time="0.004"></testcase>
 		<testcase classname="go-xmldom" id="ExampleParse" time="0.005"></testcase>
-    <testcase xmlns:test="mock" id="AttrNamespace"></testcase>
+        <testcase xmlns:test="mock" id="AttrNamespace"></testcase>
+		<testcase classname="go-xmldom" id="ParseTextNodeWithWhiteSpace"></testcase>
 	</testsuite>
 </testsuites>`
 )
@@ -32,6 +33,39 @@ func ExampleParseXML() {
 	// attributes.len = 0
 	// children.len = 1
 	// root = true
+}
+
+func ParseTextNodeWithWhiteSpace() {
+	XmlText := `<?xml version="1.0" encoding="UTF-8"?>
+	<root>
+	<val> text with leading and trailing whitespace </val>
+	</root>`
+
+	// Default behavior: string whitespaces
+	doc, err := xmldom.ParseXML(XmlText)
+	fmt.Printf("err = %v", err)
+	if err != nil {
+		return
+	}
+
+	root := doc.Root
+	val := root.Children[0]
+	fmt.Printf("val = '%v'", val.Text)
+
+	// Option to preserve whitespaces
+	option := xmldom.WithPreserveWhitespace(true)
+	doc, err = xmldom.ParseXML(XmlText, option)
+	if err != nil {
+		fmt.Printf("name = %#v,err =%v\n", doc, err)
+		return
+	}
+	root = doc.Root
+	val = root.Children[0]
+	fmt.Printf("val = '%v'", val.Text)
+	// Output:
+	// err = nil
+	// val = 'text with leading and trailing whitespace'
+	// val = ' text with leading and trailing whitespace '
 }
 
 func ExampleNode_GetAttribute() {
@@ -52,6 +86,7 @@ func ExampleNode_GetChildren() {
 	// testcase: id = ExampleParseXML
 	// testcase: id = ExampleParse
 	// testcase: id = AttrNamespace
+	// testcase: id = ParseTextNodeWithWhiteSpace
 }
 
 func ExampleNode_FindByID() {
@@ -80,6 +115,7 @@ func ExampleNode_FindByName() {
 	// <testcase classname="go-xmldom" id="ExampleParseXML" time="0.004" />
 	// <testcase classname="go-xmldom" id="ExampleParse" time="0.005" />
 	// <testcase xmlns:test="mock" id="AttrNamespace" />
+	// <testcase classname="go-xmldom" id="ParseTextNodeWithWhiteSpace" />
 }
 
 func ExampleNode_Query() {
@@ -95,10 +131,11 @@ func ExampleNode_Query() {
 		fmt.Printf("%v: id = %v\n", c.Name, c.GetAttributeValue("id"))
 	}
 	// Output:
-	// children = 6
+	// children = 7
 	// testcase: id = ExampleParseXML
 	// testcase: id = ExampleParse
 	// testcase: id = AttrNamespace
+	// testcase: id = ParseTextNodeWithWhiteSpace
 }
 
 func ExampleNode_QueryOne() {
@@ -116,7 +153,7 @@ func ExampleDocument_XML() {
 	doc := xmldom.Must(xmldom.ParseXML(ExampleXml))
 	fmt.Println(doc.XML())
 	// Output:
-	// <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE junit SYSTEM "junit-result.dtd"><testsuites><testsuite tests="2" failures="0" time="0.009" name="github.com/subchen/go-xmldom"><properties><property name="go.version">go1.8.1</property></properties><testcase classname="go-xmldom" id="ExampleParseXML" time="0.004" /><testcase classname="go-xmldom" id="ExampleParse" time="0.005" /><testcase xmlns:test="mock" id="AttrNamespace" /></testsuite></testsuites>
+	// <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE junit SYSTEM "junit-result.dtd"><testsuites><testsuite tests="2" failures="0" time="0.009" name="github.com/subchen/go-xmldom"><properties><property name="go.version">go1.8.1</property></properties><testcase classname="go-xmldom" id="ExampleParseXML" time="0.004" /><testcase classname="go-xmldom" id="ExampleParse" time="0.005" /><testcase xmlns:test="mock" id="AttrNamespace" /><testcase classname="go-xmldom" id="ParseTextNodeWithWhiteSpace" /></testsuite></testsuites>
 }
 
 func ExampleDocument_XMLPretty() {
@@ -133,6 +170,7 @@ func ExampleDocument_XMLPretty() {
 	//     <testcase classname="go-xmldom" id="ExampleParseXML" time="0.004" />
 	//     <testcase classname="go-xmldom" id="ExampleParse" time="0.005" />
 	//     <testcase xmlns:test="mock" id="AttrNamespace" />
+	//     <testcase classname="go-xmldom" id="ParseTextNodeWithWhiteSpace" />
 	//   </testsuite>
 	// </testsuites>
 }

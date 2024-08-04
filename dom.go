@@ -21,6 +21,18 @@ const (
 	xsiUrl      = "http://www.w3.org/2001/XMLSchema-instance"
 )
 
+type ParseOptions struct {
+	// Preserves leading and training whitespaces of text value nodes such as
+	// <val> myvalue <val>
+	PreserveWhitespace bool
+}
+
+func WithPreserveWhitespace(value bool) func(*ParseOptions) {
+	return func(o *ParseOptions) {
+		o.PreserveWhitespace = value
+	}
+}
+
 func Must(doc *Document, err error) *Document {
 	if err != nil {
 		panic(err)
@@ -28,8 +40,8 @@ func Must(doc *Document, err error) *Document {
 	return doc
 }
 
-func ParseXML(s string) (*Document, error) {
-	return Parse(strings.NewReader(s))
+func ParseXML(s string, options ...func(*ParseOptions)) (*Document, error) {
+	return Parse(strings.NewReader(s), options...)
 }
 
 func ParseFile(filename string) (*Document, error) {
@@ -42,13 +54,16 @@ func ParseFile(filename string) (*Document, error) {
 	return Parse(file)
 }
 
-func Parse(r io.Reader) (*Document, error) {
+func Parse(r io.Reader, options ...func(*ParseOptions)) (*Document, error) {
 	p := xml.NewDecoder(r)
 	t, err := p.Token()
 	if err != nil {
 		return nil, err
 	}
-
+	option := &ParseOptions{}
+	for _, o := range options {
+		o(option)
+	}
 	doc := new(Document)
 	var e *Node
 	for t != nil {
@@ -96,7 +111,12 @@ func Parse(r io.Reader) (*Document, error) {
 		case xml.CharData:
 			// text node
 			if e != nil {
-				e.Text = string(bytes.TrimSpace(token))
+				// Trim leading/trailing whitespaces?
+				if option.PreserveWhitespace {
+					e.Text = string(token)
+				} else {
+					e.Text = string(bytes.TrimSpace(token))
+				}
 			}
 		case xml.ProcInst:
 			doc.ProcInst = stringifyProcInst(&token)
