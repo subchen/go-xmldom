@@ -1,3 +1,5 @@
 module github.com/subchen/go-xmldom
 
-require github.com/antchfx/xpath v1.0.0
+go 1.26.1
+
+require github.com/antchfx/xpath v1.3.6
